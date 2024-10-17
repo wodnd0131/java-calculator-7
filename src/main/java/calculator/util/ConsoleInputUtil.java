@@ -7,7 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ConsoleInputUtil {
-	private static final Logger logger = Logger.getLogger(ConsoleInputUtil.class.getName());
+	private static final Logger logger = LoggerFactory.getLogger(ConsoleInputUtil.class);
 
 	public String readInput() {
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
