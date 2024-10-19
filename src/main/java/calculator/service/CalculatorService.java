@@ -1,4 +1,4 @@
-package calculator;
+package calculator.service;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -7,13 +7,13 @@ import calculator.util.ConsoleInputUtil;
 import calculator.util.LoggerFactory;
 import calculator.util.Parser;
 
-public class Calculator {
-	private static final Logger logger = LoggerFactory.getLogger(Calculator.class);
+public class CalculatorService {
+	private static final Logger logger = LoggerFactory.getLogger(CalculatorService.class);
 
 	private final ConsoleInputUtil inputReader;
 	private final Parser parser;
 
-	public Calculator() {
+	public CalculatorService() {
 		this.inputReader = new ConsoleInputUtil();
 		this.parser = new Parser();
 	}
