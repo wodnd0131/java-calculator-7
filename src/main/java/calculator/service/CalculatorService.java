@@ -23,10 +23,15 @@ public class CalculatorService {
 		String input = inputReader.readInput();
 		// 2. 구분자를 이용해 문자열 분리한다
 		List<Integer> numbers = parser.stringToInt(input);
-		System.out.println(numbers);
-		// TODO: 분리된 숫자 더한다
+		// 3. 분리된 숫자 더한다.
+		int sum = sumNumbers(numbers);
+		System.out.println(sum);
 		// TODO: 잘못된 입력에 대한 IllegalArgumentException 예외 처리한다
 		// TODO: 결과 출력한다
+	}
+
+	private int sumNumbers(List<Integer> numbers) {
+		return numbers.stream().mapToInt(Integer::intValue).sum();
 	}
 }
 
