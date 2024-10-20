@@ -3,9 +3,9 @@ package calculator.service;
 import java.util.List;
 
 import calculator.domain.NumberCalculator;
+import calculator.domain.Parser;
 import calculator.interfaces.IOHandler;
 import calculator.util.ConsoleUtil;
-import calculator.util.Parser;
 
 public class CalculatorService {
 	public static final String ENTER_NUMBERS = "덧셈할 문자열을 입력해 주세요.";
