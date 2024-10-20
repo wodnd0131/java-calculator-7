@@ -1,4 +1,4 @@
-package calculator.util;
+package calculator.domain;
 
 import java.util.Arrays;
 import java.util.List;
@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import calculator.common.ErrorMessages;
 import calculator.common.LoggerFactory;
+import calculator.util.SeparatorValidator;
 
 public class Parser {
 	private static final Logger logger = LoggerFactory.getLogger(Parser.class);
@@ -16,6 +17,12 @@ public class Parser {
 	private static final String CUSTOM_SEPARATOR_PREFIX = "//";
 	private static final String CUSTOM_SEPARATOR_SUFFIX = "\\\\n";
 	private static final String NUMBER_REGEX = "\\d+";
+
+	private final SeparatorValidator separatorValidator;
+
+	public Parser() {
+		this.separatorValidator = new SeparatorValidator();
+	}
 
 	public List<Integer> parseInput(String input) {
 		String separator = getSeparator(input);
@@ -31,35 +38,17 @@ public class Parser {
 	}
 
 	private String getCustomSeparator(String part) {
-		if (!part.startsWith(CUSTOM_SEPARATOR_PREFIX)) {
-			throwInvalidCustomSeparatorException(ErrorMessages.CUSTOM_SEPARATOR_PREFIX);
-		}
-		if (part.length() != CUSTOM_SEPARATOR_PREFIX.length() + 1) {
-			throwInvalidCustomSeparatorException(ErrorMessages.CUSTOM_SEPARATOR_LENGTH);
-		}
-		char separator = part.charAt(CUSTOM_SEPARATOR_PREFIX.length());
-		if (Character.isDigit(separator)) {
-			throwInvalidCustomSeparatorException(ErrorMessages.CUSTOM_SEPARATOR_NUMERIC);
-		}
-		return createRegexPattern(separator);
+		separatorValidator.validate(part);
+		return createRegexPattern(extractSeparator(part));
 	}
 
-	private void throwInvalidCustomSeparatorException(ErrorMessages errorMessage) {
-		logger.log(Level.SEVERE, errorMessage.getMessage());
-		throw new IllegalArgumentException(errorMessage.getMessage());
+	private char extractSeparator(String part) {
+		return part.charAt(CUSTOM_SEPARATOR_PREFIX.length());
 	}
 
 	private String createRegexPattern(char separator) {
 		String customSeparator = Pattern.quote(String.valueOf(separator));
-		checkNumberInSeparator(customSeparator);
 		return "[" + customSeparator + DEFAULT_SEPARATOR + "]";
-	}
-
-	private void checkNumberInSeparator(String customSeparator) {
-		if (customSeparator.matches(NUMBER_REGEX)) {
-			logger.log(Level.SEVERE, ErrorMessages.INVALID_CUSTOM_SEPARATOR.getMessage());
-			throw new IllegalArgumentException(customSeparator);
-		}
 	}
 
 	private String[] getItems(String input, String separator) {
@@ -79,9 +68,8 @@ public class Parser {
 	private Integer parseItem(String item) {
 		if (item.matches(NUMBER_REGEX)) {
 			return Integer.parseInt(item);
-		} else {
-			logger.log(Level.SEVERE, ErrorMessages.SEPARATOR_NOT_ALLOWED.getMessage());
-			throw new IllegalArgumentException(item);
 		}
+		logger.log(Level.SEVERE, ErrorMessages.SEPARATOR_NOT_ALLOWED.getMessage());
+		throw new IllegalArgumentException(item);
 	}
 }
