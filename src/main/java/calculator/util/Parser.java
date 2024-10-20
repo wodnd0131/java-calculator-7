@@ -31,12 +31,22 @@ public class Parser {
 	}
 
 	private String getCustomSeparator(String part) {
-		if (!part.startsWith(CUSTOM_SEPARATOR_PREFIX)
-			|| part.length() != CUSTOM_SEPARATOR_PREFIX.length() + 1) {
-			logger.log(Level.SEVERE, ErrorMessages.INVALID_CUSTOM_SEPARATOR.getMessage());
-			throw new IllegalArgumentException(part);
+		if (!part.startsWith(CUSTOM_SEPARATOR_PREFIX)) {
+			throwInvalidCustomSeparatorException(ErrorMessages.CUSTOM_SEPARATOR_PREFIX);
 		}
-		return createRegexPattern(part.charAt(CUSTOM_SEPARATOR_PREFIX.length()));
+		if (part.length() != CUSTOM_SEPARATOR_PREFIX.length() + 1) {
+			throwInvalidCustomSeparatorException(ErrorMessages.CUSTOM_SEPARATOR_LENGTH);
+		}
+		char separator = part.charAt(CUSTOM_SEPARATOR_PREFIX.length());
+		if (Character.isDigit(separator)) {
+			throwInvalidCustomSeparatorException(ErrorMessages.CUSTOM_SEPARATOR_NUMERIC);
+		}
+		return createRegexPattern(separator);
+	}
+
+	private void throwInvalidCustomSeparatorException(ErrorMessages errorMessage) {
+		logger.log(Level.SEVERE, errorMessage.getMessage());
+		throw new IllegalArgumentException(errorMessage.getMessage());
 	}
 
 	private String createRegexPattern(char separator) {
