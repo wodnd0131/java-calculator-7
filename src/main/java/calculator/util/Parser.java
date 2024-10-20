@@ -7,6 +7,9 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import calculator.common.ErrorMessages;
+import calculator.common.LoggerFactory;
+
 public class Parser {
 	private static final Logger logger = LoggerFactory.getLogger(Parser.class);
 	private static final String DEFAULT_SEPARATOR = ",:";
@@ -28,8 +31,9 @@ public class Parser {
 	}
 
 	private String getCustomSeparator(String part) {
-		if (!part.startsWith(CUSTOM_SEPARATOR_PREFIX) || part.length() != CUSTOM_SEPARATOR_PREFIX.length() + 1) {
-			logger.log(Level.SEVERE, "커스텀 구분자 지정이 올바르지 않습니다 ");
+		if (!part.startsWith(CUSTOM_SEPARATOR_PREFIX)
+			|| part.length() != CUSTOM_SEPARATOR_PREFIX.length() + 1) {
+			logger.log(Level.SEVERE, ErrorMessages.INVALID_CUSTOM_SEPARATOR.getMessage());
 			throw new IllegalArgumentException(part);
 		}
 		return createRegexPattern(part.charAt(CUSTOM_SEPARATOR_PREFIX.length()));
@@ -37,7 +41,15 @@ public class Parser {
 
 	private String createRegexPattern(char separator) {
 		String customSeparator = Pattern.quote(String.valueOf(separator));
+		checkNumberInSeparator(customSeparator);
 		return "[" + customSeparator + DEFAULT_SEPARATOR + "]";
+	}
+
+	private void checkNumberInSeparator(String customSeparator) {
+		if (customSeparator.matches(NUMBER_REGEX)) {
+			logger.log(Level.SEVERE, ErrorMessages.INVALID_CUSTOM_SEPARATOR.getMessage());
+			throw new IllegalArgumentException(customSeparator);
+		}
 	}
 
 	private String[] getItems(String input, String separator) {
@@ -58,7 +70,7 @@ public class Parser {
 		if (item.matches(NUMBER_REGEX)) {
 			return Integer.parseInt(item);
 		} else {
-			logger.log(Level.SEVERE, "등록되지 않은 구분자입니다");
+			logger.log(Level.SEVERE, ErrorMessages.SEPARATOR_NOT_ALLOWED.getMessage());
 			throw new IllegalArgumentException(item);
 		}
 	}
